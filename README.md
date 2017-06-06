@@ -14,14 +14,43 @@ sync vimim's db file with git repo
 
     such as `call VimIMSync('ceshi', '测试')`
 
-    or, add multiple then sync
+    or, make multiple changes then upload
 
     ```
     call VimIMSyncAdd('ceshi', '测试')
     call VimIMSyncAdd('yixia', '一下')
+    call VimIMSyncRemove('删除')
+    call VimIMSyncReset('重置排序')
     call VimIMSyncUpload('password')
     ```
 
-    this will append the item if not exist,
-    or move it to top if already exist
+# functions
+
+* `call VimIMSync(key, word [, password])` or `IMSync key word [password]`
+
+    IMSAdd then IMSUpload
+
+* `call VimIMSyncAdd(key, word)` or `IMSAdd key word`
+
+    add word if not exist, or move candidate word to top most if exist
+
+* `call VimIMSyncRemove(word)` or `IMSRemove word`
+
+    remove word
+
+* `call VimIMSyncReset(word)` or `IMSReset word`
+
+    reset candidate word to bottom most
+
+* `call VimIMSyncUpload([password])` or `IMSUpload [password]`
+
+    upload to git repo
+
+* `call VimIMSyncUploadRetry([password])` or `IMSUploadRetry [password]`
+
+    retry IMSUpload
+
+* `call VimIMSyncState([maxStateNumToPrint])` or `IMSState [maxStateNumToPrint]`
+
+    print current modify state
 
