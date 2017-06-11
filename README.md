@@ -10,7 +10,7 @@ sync vimim's db file with git repo
 
     such as `plugin/vimim.baidu.txt`
 
-* `call VimIMSync(key, word [, password])`
+* `call VimIMSync(word, key [, password])`
 
     such as `call VimIMSync('ceshi', '测试')`
 
@@ -26,17 +26,17 @@ sync vimim's db file with git repo
 
 # functions
 
-* `call VimIMSync(key, word [, password])` or `IMSync key word [password]`
+* `call VimIMSync(word, key [, password])` or `IMSync word key [password]`
 
     IMSAdd then IMSUpload
 
-* `call VimIMSyncAdd(key, word)` or `IMSAdd key word`
+* `call VimIMSyncAdd(word, key)` or `IMSAdd word key`
 
     add word if not exist, or move candidate word to top most if exist
 
-* `call VimIMSyncRemove(word)` or `IMSRemove word`
+* `call VimIMSyncRemove(word [, key])` or `IMSRemove word [key]`
 
-    remove word
+    remove word, if key specified, remove the one exactly, otherwise, remove all
 
 * `call VimIMSyncReset(word)` or `IMSReset word`
 

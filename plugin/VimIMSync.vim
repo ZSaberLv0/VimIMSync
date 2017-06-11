@@ -15,14 +15,14 @@ let s:savedPwd=''
 let s:toChange=[]
 let s:toChange_saved=[]
 
-function! VimIMSync(key, word, ...)
+function! VimIMSync(word, key, ...)
     if a:0 > 1
         echo 'usage:'
-        echo '  call VimIMSync(key, word, [password])'
+        echo '  call VimIMSync(word, key, [password])'
         return
     endif
 
-    if !VimIMSyncAdd(a:key, a:word)
+    if !VimIMSyncAdd(a:word, a:key)
         return
     endif
 
@@ -34,7 +34,7 @@ function! VimIMSync(key, word, ...)
 endfunction
 command! -nargs=+ IMSync :call VimIMSync(<f-args>)
 
-function! VimIMSyncAdd(key, word)
+function! VimIMSyncAdd(word, key)
     if !s:stateCheck()
         return 0
     endif
@@ -56,9 +56,14 @@ function! VimIMSyncAdd(key, word)
 endfunction
 command! -nargs=+ IMSAdd :call VimIMSyncAdd(<f-args>)
 
-function! VimIMSyncRemove(word)
+function! VimIMSyncRemove(word, ...)
     if !s:stateCheck()
         return 0
+    endif
+
+    let key = ''
+    if a:0 > 0
+        let key = substitute(a:1, ' ', '', 'g')
     endif
 
     let word = substitute(a:word, ' ', '', 'g')
@@ -66,11 +71,11 @@ function! VimIMSyncRemove(word)
         echo 'VimIMSyncRemove: empty word'
     endif
 
-    call add(s:toChange, {'action' : 'remove', 'word' : word})
+    call add(s:toChange, {'action' : 'remove', 'key' : key, 'word' : word})
 
     return 1
 endfunction
-command! -nargs=1 IMSRemove :call VimIMSyncRemove(<f-args>)
+command! -nargs=+ IMSRemove :call VimIMSyncRemove(<f-args>)
 
 function! VimIMSyncReset(word)
     if !s:stateCheck()
@@ -145,9 +150,9 @@ function! VimIMSyncState(...)
     let iItem = 0
     for item in s:toChange
         if item['action'] == 'add'
-            echo '    <add>      ' . item['key'] . "\t" . item['word']
+            echo '    <add>      ' . item['word'] . "\t" . item['key']
         elseif item['action'] == 'remove'
-            echo '    <remove>   ' . item['word']
+            echo '    <remove>   ' . item['word'] . "\t" . item['key']
         elseif item['action'] == 'reset'
             echo '    <reset>    ' . item['word']
         else
@@ -237,17 +242,17 @@ function! s:upload()
 endfunction
 
 function! s:apply()
-    for item in s:toAdd
+    for item in s:toChange
         if item['action'] == 'add'
-            call s:applyAdd(item['key'], item['word'])
+            call s:applyAdd(item['word'], item['key'])
         elseif item['action'] == 'remove'
-            call s:applyRemove(item['word'])
+            call s:applyRemove(item['word'], item['key'])
         elseif item['action'] == 'reset'
             call s:applyReset(item['word'])
         endif
     endfor
 endfunction
-function! s:applyAdd(key, word)
+function! s:applyAdd(word, key)
     let exist=0
     for iLine in range(1, line('$') + 1)
         let line = getline(iLine)
@@ -272,8 +277,12 @@ function! s:applyAdd(key, word)
         call setline(line('$') + 1, a:key . ' ' . a:word)
     endif
 endfunction
-function! s:applyRemove(word)
-    execute '%s/ ' . a:word . '\>//g'
+function! s:applyRemove(word, key)
+    if len(a:key) > 0
+        execute '%s/\%(' . a:key . '\>.*\)\@<= ' . a:word . '\>//g'
+    else
+        execute '%s/ ' . a:word . '\>//g'
+    endif
     execute 'g/^[a-z]*$/d'
 endfunction
 function! s:applyReset(word)
