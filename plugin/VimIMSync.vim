@@ -187,6 +187,48 @@ function! VimIMSyncState(...)
 endfunction
 command! -nargs=? IMState :call VimIMSyncState(<f-args>)
 
+function! VimIMSyncFormalize()
+    let dict={}
+    for iLine in range(1, line('$') + 1)
+        let line = getline(iLine)
+        let word = split(line, ' ')
+        if len(word) <= 0
+            continue
+        endif
+
+        let key = word[0]
+        call remove(word, 0)
+
+        if exists('dict[key]')
+            call extend(dict[key], word)
+        else
+            let dict[key] = word
+        endif
+    endfor
+
+    normal! ggdG
+
+    let iLine = 1
+    for key in keys(dict)
+        if len(key) <= 0 || len(dict[key]) <= 0
+            continue
+        endif
+
+        let line = key
+        for word in dict[key]
+            let line .= ' '
+            let line .= word
+        endfor
+
+        call setline(iLine, line)
+        let iLine += 1
+    endfor
+
+    sort
+    update
+endfunction
+command! -nargs=0 IMFormalize :call VimIMSyncFormalize(<f-args>)
+
 function! s:stateCheck()
     if !exists('g:VimIMSync_repo_head')
         echo 'g:VimIMSync_repo_head not set'

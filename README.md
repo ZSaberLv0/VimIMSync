@@ -60,3 +60,7 @@ sync vimim's db file with git repo
 
     print current modify state
 
+* `call VimIMSyncFormalize()` or `IMFormalize`
+
+    formalize and sort current dict file buffer
+
