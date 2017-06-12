@@ -54,7 +54,7 @@ function! VimIMSyncAdd(word, key)
 
     return 1
 endfunction
-command! -nargs=+ IMSAdd :call VimIMSyncAdd(<f-args>)
+command! -nargs=+ IMAdd :call VimIMSyncAdd(<f-args>)
 
 function! VimIMSyncRemove(word, ...)
     if !s:stateCheck()
@@ -75,7 +75,7 @@ function! VimIMSyncRemove(word, ...)
 
     return 1
 endfunction
-command! -nargs=+ IMSRemove :call VimIMSyncRemove(<f-args>)
+command! -nargs=+ IMRemove :call VimIMSyncRemove(<f-args>)
 
 function! VimIMSyncReset(word)
     if !s:stateCheck()
@@ -91,7 +91,15 @@ function! VimIMSyncReset(word)
 
     return 1
 endfunction
-command! -nargs=1 IMSReset :call VimIMSyncReset(<f-args>)
+command! -nargs=1 IMReset :call VimIMSyncReset(<f-args>)
+
+function! VimIMSyncClear()
+    let s:toChange = []
+    let s:toChange_saved = []
+    echo 'VimIMSync: local changes cleared'
+    return 1
+endfunction
+command! -nargs=0 IMClear :call VimIMSyncClear(<f-args>)
 
 function! VimIMSyncUpload(...)
     if a:0 > 1
@@ -122,7 +130,7 @@ function! VimIMSyncUpload(...)
     let s:toChange_saved = s:toChange
     call s:upload()
 endfunction
-command! -nargs=? IMSUpload :call VimIMSyncUpload(<f-args>)
+command! -nargs=? IMUpload :call VimIMSyncUpload(<f-args>)
 
 function! VimIMSyncUploadRetry(...)
     if a:0 >= 1 && len(a:1) > 0
@@ -131,7 +139,7 @@ function! VimIMSyncUploadRetry(...)
     let s:toChange = s:toChange_saved
     call VimIMSyncUpload()
 endfunction
-command! -nargs=? IMSUploadRetry :call VimIMSyncUploadRetry(<f-args>)
+command! -nargs=? IMUploadRetry :call VimIMSyncUploadRetry(<f-args>)
 
 function! VimIMSyncState(...)
     if len(s:toChange) <= 0
@@ -175,13 +183,9 @@ function! VimIMSyncState(...)
         return
     endif
 
-    if a:0 > 0
-        call VimIMSyncUpload(a:1)
-    else
-        call VimIMSyncUpload()
-    endif
+    call VimIMSyncUpload()
 endfunction
-command! -nargs=? IMSState :call VimIMSyncState(<f-args>)
+command! -nargs=? IMState :call VimIMSyncState(<f-args>)
 
 function! s:stateCheck()
     if !exists('g:VimIMSync_repo_head')

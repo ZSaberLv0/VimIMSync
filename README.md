@@ -28,29 +28,35 @@ sync vimim's db file with git repo
 
 * `call VimIMSync(word, key [, password])` or `IMSync word key [password]`
 
-    IMSAdd then IMSUpload
+    IMAdd then IMUpload
 
-* `call VimIMSyncAdd(word, key)` or `IMSAdd word key`
+* `call VimIMSyncAdd(word, key)` or `IMAdd word key`
 
     add word if not exist, or move candidate word to top most if exist
 
-* `call VimIMSyncRemove(word [, key])` or `IMSRemove word [key]`
+    changes only apply to local, you must call VimIMSyncUpload to sync to remote
+
+* `call VimIMSyncRemove(word [, key])` or `IMRemove word [key]`
 
     remove word, if key specified, remove the one exactly, otherwise, remove all
 
-* `call VimIMSyncReset(word)` or `IMSReset word`
+* `call VimIMSyncReset(word)` or `IMReset word`
 
     reset candidate word to bottom most
 
-* `call VimIMSyncUpload([password])` or `IMSUpload [password]`
+* `call VimIMSyncClear()` or `IMClear`
+
+    clear all local changes
+
+* `call VimIMSyncUpload([password])` or `IMUpload [password]`
 
     upload to git repo
 
-* `call VimIMSyncUploadRetry([password])` or `IMSUploadRetry [password]`
+* `call VimIMSyncUploadRetry([password])` or `IMUploadRetry [password]`
 
-    retry IMSUpload
+    retry IMUpload
 
-* `call VimIMSyncState([maxStateNumToPrint])` or `IMSState [maxStateNumToPrint]`
+* `call VimIMSyncState([maxStateNumToPrint])` or `IMState [maxStateNumToPrint]`
 
     print current modify state
 
