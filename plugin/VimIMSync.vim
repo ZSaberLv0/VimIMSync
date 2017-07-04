@@ -266,6 +266,7 @@ function! s:upload()
     enew
     execute 'edit ' . dstFile
     call s:apply()
+    sort
     update
     bd
 
