@@ -317,6 +317,10 @@ function! s:apply()
             call s:applyReset(item['word'])
         endif
     endfor
+
+    " fix search highlight
+    silent! normal! n
+    redraw!
 endfunction
 function! s:applyAdd(word, key)
     let exist=0
@@ -345,14 +349,14 @@ function! s:applyAdd(word, key)
 endfunction
 function! s:applyRemove(word, key)
     if len(a:key) > 0
-        execute '%s/\%(' . a:key . '\>.*\)\@<= ' . a:word . '\>//g'
+        execute 'silent! %s/\%(' . a:key . '\>.*\)\@<= ' . a:word . '\>//g'
     else
-        execute '%s/ ' . a:word . '\>//g'
+        execute 'silent! %s/ ' . a:word . '\>//g'
     endif
-    execute 'g/^[a-z]*$/d'
+    execute 'silent! g/^[a-z]\+$/d'
 endfunction
 function! s:applyReset(word)
-    execute '%s/^\(.*\)\( ' . a:word . '\)\( .*\)$/\1\3\2/g'
+    execute 'silent! %s/^\(.*\)\( ' . a:word . '\)\( .*\)$/\1\3\2/g'
 endfunction
 
 function! s:reloadFromRemote()
