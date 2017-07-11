@@ -51,6 +51,7 @@ function! VimIMSyncAdd(word, key)
     endif
 
     call add(s:toChange, {'action' : 'add', 'key' : key, 'word' : word})
+    call s:applyLocalOnly()
 
     return 1
 endfunction
@@ -72,6 +73,7 @@ function! VimIMSyncRemove(word, ...)
     endif
 
     call add(s:toChange, {'action' : 'remove', 'key' : key, 'word' : word})
+    call s:applyLocalOnly()
 
     return 1
 endfunction
@@ -88,6 +90,7 @@ function! VimIMSyncReset(word)
     endif
 
     call add(s:toChange, {'action' : 'reset', 'word' : word})
+    call s:applyLocalOnly()
 
     return 1
 endfunction
@@ -96,6 +99,7 @@ command! -nargs=1 IMReset :call VimIMSyncReset(<f-args>)
 function! VimIMSyncClear()
     let s:toChange = []
     let s:toChange_saved = []
+    call s:reloadFromRemote()
     echo 'VimIMSync: local changes cleared'
     return 1
 endfunction
@@ -285,7 +289,22 @@ function! s:upload()
     let dummy = system('rm -rf "' . tmp_path . '"')
     let s:toChange=[]
 
-    call s:reload()
+    call s:reloadFromRemote()
+endfunction
+
+function! s:applyLocalOnly()
+    let dstPath = globpath(&rtp, g:VimIMSync_file)
+    if len(dstPath) <= 0
+        return
+    endif
+
+    enew
+    execute 'edit ' . dstPath
+    call s:apply()
+    sort
+    update
+    bd
+    call s:reloadVimim()
 endfunction
 
 function! s:apply()
@@ -336,7 +355,7 @@ function! s:applyReset(word)
     execute '%s/^\(.*\)\( ' . a:word . '\)\( .*\)$/\1\3\2/g'
 endfunction
 
-function! s:reload()
+function! s:reloadFromRemote()
     let dstPath = globpath(&rtp, g:VimIMSync_file)
     if len(dstPath) <= 0
         return
@@ -344,8 +363,16 @@ function! s:reload()
     let t = substitute(g:VimIMSync_file, '\\', '/', 'g')
     let dstPath = substitute(dstPath, '\\', '/', 'g')
     let dstPath = substitute(dstPath, t, '', 'g')
+    let dummy = system('git -C "' . dstPath . '" checkout .')
     let dummy = system('git -C "' . dstPath . '" pull')
+    call s:reloadVimim()
+endfunction
+function! s:reloadVimim()
     silent! call VimIMReload()
+    " toggle vimim twice to make vimim active
+    execute "normal! i\<C-R>=g:Vimim_chinese()\<CR>\<Esc>l"
+    execute "normal! i\<C-R>=g:Vimim_chinese()\<CR>\<Esc>l"
+    redraw!
 endfunction
 
 augroup VimIMSyncAutoUpload
