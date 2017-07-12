@@ -33,7 +33,7 @@ sync vimim's db file with git repo
     call IMAdd 测试 ceshi
     call IMAdd 一下 yixia
     call IMRemove 删除
-    call IMRemp 删除指定 shanchuzhiding
+    call IMRemove 删除指定 shanchuzhiding
     call IMReset 重置排序
     call IMUpload password
     ```
