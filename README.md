@@ -3,42 +3,56 @@ sync vimim's db file with git repo
 # usage
 
 * require my fork: [ZSaberLv0/VimIM](https://github.com/ZSaberLv0/VimIM)
-* `let g:VimIMSync_repo_head='https://'`
-* `let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'`
-* `let g:VimIMSync_user='YourUserName'`
-* `let g:VimIMSync_file='vimim_data_file_path'`
-
-    such as `plugin/vimim.baidu.txt`
-
-* `call VimIMSync(word, key [, password])`
-
-    such as `call VimIMSync('ceshi', '测试')`
-
-    or, make multiple changes then upload
+* have these settings
 
     ```
-    call VimIMSyncAdd('ceshi', '测试')
-    call VimIMSyncAdd('yixia', '一下')
-    call VimIMSyncRemove('删除')
-    call VimIMSyncReset('重置排序')
-    call VimIMSyncUpload('password')
+    let g:VimIMSync_repo_head='https://'
+    let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'
+    let g:VimIMSync_user='YourUserName'
+    let g:VimIMSync_file='vimim_data_file_path, such as: plugin/vimim.baidu.txt'
+    ```
+
+    * the db file must follow these rules
+
+        * format: `pinyin word1 word2`
+        * word with same pinyin must be placed in same line:
+
+            ```
+            xian 先 西安
+            ```
+
+* `call IMSync word pinyin [password]`
+
+    such as `:IMSync 测试 ceshi`
+
+    this would add a word and upload immediately
+
+* or, make multiple changes then upload
+
+    ```
+    call IMAdd 测试 ceshi
+    call IMAdd 一下 yixia
+    call IMRemove 删除
+    call IMRemp 删除指定 shanchuzhiding
+    call IMReset 重置排序
+    call IMUpload password
     ```
 
 # functions
 
-* `call VimIMSync(word, key [, password])` or `IMSync word key [password]`
+* `call VimIMSync(word, pinyin [, password])` or `IMSync word pinyin [password]`
 
     IMAdd then IMUpload
 
-* `call VimIMSyncAdd(word, key)` or `IMAdd word key`
+* `call VimIMSyncAdd(word, pinyin)` or `IMAdd word pinyin`
 
     add word if not exist, or move candidate word to top most if exist
 
     changes only apply to local, you must call VimIMSyncUpload to sync to remote
 
-* `call VimIMSyncRemove(word [, key])` or `IMRemove word [key]`
+* `call VimIMSyncRemove(word [, pinyin])` or `IMRemove word [pinyin]`
 
-    remove word, if key specified, remove the one exactly, otherwise, remove all
+    remove word, if pinyin specified, remove the one exactly, otherwise, remove all
 
 * `call VimIMSyncReset(word)` or `IMReset word`
 
