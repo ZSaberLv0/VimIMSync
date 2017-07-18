@@ -58,9 +58,9 @@ sync vimim's db file with git repo
 
     reset candidate word to bottom most
 
-* `call VimIMSyncClear()` or `IMClear`
+* `call VimIMSyncClearLocalState()` or `IMClearLocalState`
 
-    clear all local changes
+    clear all local changes, and reload from remote
 
 * `call VimIMSyncUpload([password])` or `IMUpload [password]`
 
@@ -70,11 +70,15 @@ sync vimim's db file with git repo
 
     retry IMUpload
 
+* `call VimIMSyncDownload()` or `IMDownload`
+
+    reload from remote (local changes can be upload later)
+
 * `call VimIMSyncState([maxStateNumToPrint])` or `IMState [maxStateNumToPrint]`
 
     print current modify state
 
-* `call VimIMSyncFormalize()` or `IMFormalize`
+* `call VimIMSyncFormalizeBuffer()` or `IMFormalizeBuffer`
 
     formalize and sort current dict file buffer
 

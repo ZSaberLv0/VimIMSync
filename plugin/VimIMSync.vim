@@ -96,14 +96,14 @@ function! VimIMSyncReset(word)
 endfunction
 command! -nargs=1 IMReset :call VimIMSyncReset(<f-args>)
 
-function! VimIMSyncClear()
+function! VimIMSyncClearLocalState()
     let s:toChange = []
     let s:toChange_saved = []
     call s:reloadFromRemote()
     echo 'VimIMSync: local changes cleared'
     return 1
 endfunction
-command! -nargs=0 IMClear :call VimIMSyncClear(<f-args>)
+command! -nargs=0 IMClearLocalState :call VimIMSyncClearLocalState(<f-args>)
 
 function! VimIMSyncUpload(...)
     if a:0 > 1
@@ -144,6 +144,11 @@ function! VimIMSyncUploadRetry(...)
     call VimIMSyncUpload()
 endfunction
 command! -nargs=? IMUploadRetry :call VimIMSyncUploadRetry(<f-args>)
+
+function! VimIMSyncDownload()
+    call s:reloadFromRemote()
+endfunction
+command! -nargs=0 IMDownload :call VimIMSyncDownload(<f-args>)
 
 function! VimIMSyncState(...)
     if len(s:toChange) <= 0
@@ -191,7 +196,7 @@ function! VimIMSyncState(...)
 endfunction
 command! -nargs=? IMState :call VimIMSyncState(<f-args>)
 
-function! VimIMSyncFormalize()
+function! VimIMSyncFormalizeBuffer()
     let dict={}
     for iLine in range(1, line('$') + 1)
         let line = getline(iLine)
@@ -231,7 +236,7 @@ function! VimIMSyncFormalize()
     sort
     update
 endfunction
-command! -nargs=0 IMFormalize :call VimIMSyncFormalize(<f-args>)
+command! -nargs=0 IMFormalizeBuffer :call VimIMSyncFormalizeBuffer(<f-args>)
 
 function! s:stateCheck()
     if !exists('g:VimIMSync_repo_head')
