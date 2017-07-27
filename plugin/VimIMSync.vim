@@ -272,8 +272,7 @@ function! s:upload()
         return
     endif
 
-    enew
-    execute 'edit ' . dstFile
+    execute 'tabedit ' . dstFile
     call s:apply()
     sort
     update
@@ -303,8 +302,7 @@ function! s:applyLocalOnly()
         return
     endif
 
-    enew
-    execute 'edit ' . dstPath
+    execute 'tabedit ' . dstPath
     call s:apply()
     sort
     update
