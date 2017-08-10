@@ -163,7 +163,7 @@ function! VimIMSyncState(...)
     endif
 
     redraw!
-    echo 'VimIMSync: you have changes to upload:'
+    echo 'VimIMSync: you have ' . len(s:toChange) . ' changes to upload:'
     let iItem = 0
     for item in s:toChange
         if item['action'] == 'add'
