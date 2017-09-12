@@ -30,12 +30,12 @@ sync vimim's db file with git repo
 * or, make multiple changes then upload
 
     ```
-    call IMAdd 测试 ceshi
-    call IMAdd 一下 yixia
-    call IMRemove 删除
-    call IMRemove 删除指定 shanchuzhiding
-    call IMReset 重置排序
-    call IMUpload password
+    :IMAdd 测试 ceshi
+    :IMAdd 一下 yixia
+    :IMRemove 删除
+    :IMRemove 删除指定 shanchuzhiding
+    :IMReset 重置排序
+    :IMUpload password
     ```
 
 # functions
