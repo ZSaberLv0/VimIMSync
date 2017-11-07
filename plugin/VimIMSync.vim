@@ -4,6 +4,7 @@ let g:VimIMSync_loaded=1
 " let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'
 " let g:VimIMSync_user='YourUserName'
 " let g:VimIMSync_file='vimim_data_file_path'
+let g:VimIMSync_actionFinishCallback=''
 
 
 let s:savedPwd=''
@@ -294,6 +295,7 @@ function! s:upload()
     let s:toChange=[]
 
     call s:reloadFromRemote()
+    call s:notifyCallback()
 endfunction
 
 function! s:applyLocalOnly()
@@ -308,6 +310,13 @@ function! s:applyLocalOnly()
     update
     bd
     call s:reloadVimim()
+    call s:notifyCallback()
+endfunction
+
+function! s:notifyCallback()
+    if exists('g:VimIMSync_actionFinishCallback') && !empty(g:VimIMSync_actionFinishCallback)
+        execute 'call ' . g:VimIMSync_actionFinishCallback . '()'
+    endif
 endfunction
 
 function! s:apply()
