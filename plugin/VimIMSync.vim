@@ -263,13 +263,13 @@ function! s:upload()
     redraw!
     echo 'updating...'
     let tmp_path = $HOME . '/_VimIMSync_tmp_'
-    let dummy = system('rm -rf "' . tmp_path . '"')
-    let dummy = system('git clone --depth=1 ' . g:VimIMSync_repo_head . g:VimIMSync_repo_tail . ' "' . tmp_path . '"')
+    call delete(tmp_path, 'rf')
+    call system('git clone --depth=1 ' . g:VimIMSync_repo_head . g:VimIMSync_repo_tail . ' "' . tmp_path . '"')
     let dstFile = tmp_path . '/' . g:VimIMSync_file
     if !filewritable(dstFile)
         redraw!
         echo 'unable to write file: "' . dstFile . '"'
-        let dummy = system('rm -rf "' . tmp_path . '"')
+        call delete(tmp_path, 'rf')
         return
     endif
 
@@ -279,19 +279,19 @@ function! s:upload()
     update
     bd
 
-    let dummy = system('git -C "' . tmp_path . '" config user.email "' . g:zf_git_user_email . '"')
-    let dummy = system('git -C "' . tmp_path . '" config user.name "' . g:zf_git_user_name . '"')
-    let dummy = system('git -C "' . tmp_path . '" config push.default "simple"')
-    let dummy = system('git -C "' . tmp_path . '" commit -a -m "update by VimIMSync"')
+    call system('git -C "' . tmp_path . '" config user.email "' . g:zf_git_user_email . '"')
+    call system('git -C "' . tmp_path . '" config user.name "' . g:zf_git_user_name . '"')
+    call system('git -C "' . tmp_path . '" config push.default "simple"')
+    call system('git -C "' . tmp_path . '" commit -a -m "update by VimIMSync"')
     redraw!
     echo 'pushing...'
-    let dummy = system('git -C "' . tmp_path . '" push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
+    let result = system('git -C "' . tmp_path . '" push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
     redraw!
     " strip password
-    let dummy = substitute(dummy, ':[^:]*@', '@', 'g')
-    echo dummy
+    let result = substitute(result, ':[^:]*@', '@', 'g')
+    echo result
 
-    let dummy = system('rm -rf "' . tmp_path . '"')
+    call delete(tmp_path, 'rf')
     let s:toChange=[]
 
     call s:reloadFromRemote()
@@ -379,8 +379,8 @@ function! s:reloadFromRemote()
     let t = substitute(g:VimIMSync_file, '\\', '/', 'g')
     let dstPath = substitute(dstPath, '\\', '/', 'g')
     let dstPath = substitute(dstPath, t, '', 'g')
-    let dummy = system('git -C "' . dstPath . '" checkout .')
-    let dummy = system('git -C "' . dstPath . '" pull')
+    call system('git -C "' . dstPath . '" checkout .')
+    call system('git -C "' . dstPath . '" pull')
     call s:reloadVimim()
 endfunction
 function! s:reloadVimim()
