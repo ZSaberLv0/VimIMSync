@@ -121,11 +121,15 @@ function! VimIMSyncUpload(...)
         let s:savedPwd=a:1
     endif
     if len(s:savedPwd) <= 0
-        call inputsave()
-        let s:savedPwd = input('Enter password: ')
-        call inputrestore()
-        " prevent password from being saved to viminfo
-        set viminfo=
+        if exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)
+            let s:savedPwd = g:zf_git_user_token
+        else
+            call inputsave()
+            let s:savedPwd = input('Enter password: ')
+            call inputrestore()
+            " prevent password from being saved to viminfo
+            set viminfo=
+        endif
     endif
     if len(s:savedPwd) <= 0
         echo 'VimIMSync canceled'
