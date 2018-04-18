@@ -3,6 +3,12 @@ sync vimim's db file with git repo
 # usage
 
 * require my fork: [ZSaberLv0/VimIM](https://github.com/ZSaberLv0/VimIM)
+
+    ```
+    Plug 'ZSaberLv0/VimIM'
+    Plug 'ZSaberLv0/VimIMSync'
+    ```
+
 * have these settings
 
     ```
@@ -20,6 +26,12 @@ sync vimim's db file with git repo
             ```
             xian 先 西安
             ```
+
+    * optionally, you may set `g:zf_git_user_token` to push without input your git password
+
+        ```
+        let g:zf_git_user_token='your github access token'
+        ```
 
 * `call IMSync word pinyin [password]`
 

@@ -7,8 +7,8 @@ let g:VimIMSync_loaded=1
 if !exists('g:VimIMSync_actionFinishCallback')
     let g:VimIMSync_actionFinishCallback=''
 endif
-if !exists('g:VimIMSync_uploadWithouConfirm')
-    let g:VimIMSync_uploadWithouConfirm=1
+if !exists('g:VimIMSync_uploadWithoutConfirm')
+    let g:VimIMSync_uploadWithoutConfirm=1
 endif
 
 
@@ -403,7 +403,7 @@ endfunction
 augroup VimIMSyncAutoUpload
     autocmd!
     autocmd VimLeavePre *
-                \ if g:VimIMSync_uploadWithouConfirm && exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)|
+                \ if g:VimIMSync_uploadWithoutConfirm && exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)|
                 \     call VimIMSyncUpload()|
                 \ else|
                 \     call VimIMSyncState(5)|
