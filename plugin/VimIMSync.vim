@@ -4,7 +4,12 @@ let g:VimIMSync_loaded=1
 " let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'
 " let g:VimIMSync_user='YourUserName'
 " let g:VimIMSync_file='vimim_data_file_path'
-let g:VimIMSync_actionFinishCallback=''
+if !exists('g:VimIMSync_actionFinishCallback')
+    let g:VimIMSync_actionFinishCallback=''
+endif
+if !exists('g:VimIMSync_uploadWithouConfirm')
+    let g:VimIMSync_uploadWithouConfirm=1
+endif
 
 
 let s:savedPwd=''
@@ -398,6 +403,10 @@ endfunction
 augroup VimIMSyncAutoUpload
     autocmd!
     autocmd VimLeavePre *
-                \ call VimIMSyncState(5)
+                \ if g:VimIMSync_uploadWithouConfirm && exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)|
+                \     call VimIMSyncUpload()|
+                \ else|
+                \     call VimIMSyncState(5)|
+                \ endif
 augroup END
 
