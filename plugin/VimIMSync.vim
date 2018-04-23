@@ -272,13 +272,13 @@ function! s:upload()
     redraw!
     echo 'updating...'
     let tmp_path = $HOME . '/_VimIMSync_tmp_'
-    call delete(tmp_path, 'rf')
+    call s:rm(tmp_path)
     call system('git clone --depth=1 ' . g:VimIMSync_repo_head . g:VimIMSync_repo_tail . ' "' . tmp_path . '"')
     let dstFile = tmp_path . '/' . g:VimIMSync_file
     if !filewritable(dstFile)
         redraw!
         echo 'unable to write file: "' . dstFile . '"'
-        call delete(tmp_path, 'rf')
+        call s:rm(tmp_path)
         return
     endif
 
@@ -300,7 +300,7 @@ function! s:upload()
     let result = substitute(result, ':[^:]*@', '@', 'g')
     echo result
 
-    call delete(tmp_path, 'rf')
+    call s:rm(tmp_path)
     let s:toChange=[]
 
     call s:reloadFromRemote()
@@ -398,6 +398,15 @@ function! s:reloadVimim()
     execute "normal! i\<C-R>=g:Vimim_chinese()\<CR>\<Esc>l"
     execute "normal! i\<C-R>=g:Vimim_chinese()\<CR>\<Esc>l"
     redraw!
+endfunction
+
+function! s:rm(f)
+    if(has('win32') || has('win64') || has('win95') || has('win16'))
+        call system('del /f/s/q "' . substitute(a:f, '/', '\\', 'g') . '"')
+        call system('rmdir /s/q "' . substitute(a:f, '/', '\\', 'g') . '"')
+    else
+        call system('rm -rf "' . a:f. '"')
+    endif
 endfunction
 
 augroup VimIMSyncAutoUpload
