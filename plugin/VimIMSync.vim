@@ -234,7 +234,12 @@ function! VimIMSyncFormalizeBuffer()
         endif
 
         let line = key
+        let existWord = {}
         for word in dict[key]
+            if exists("existWord['" . word . "']")
+                continue
+            endif
+            let existWord[word] = 1
             let line .= ' '
             let line .= word
         endfor
