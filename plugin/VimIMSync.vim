@@ -23,8 +23,8 @@ let s:toChange_saved=[]
 
 function! VimIMSync(word, key, ...)
     if a:0 > 1
-        echo 'usage:'
-        echo '  call VimIMSync(word, key, [password])'
+        echo '[VimIMSync] usage:'
+        echo '[VimIMSync]   call VimIMSync(word, key, [password])'
         return
     endif
 
@@ -47,13 +47,13 @@ function! VimIMSyncAdd(word, key)
 
     let key = substitute(a:key, ' ', '', 'g')
     if len(key) <= 0
-        echo 'VimIMSyncAdd: empty key'
+        echo '[VimIMSync] VimIMSyncAdd: empty key'
         return 0
     endif
 
     let word = substitute(a:word, ' ', '', 'g')
     if len(word) <= 0
-        echo 'VimIMSyncAdd: empty word'
+        echo '[VimIMSync] VimIMSyncAdd: empty word'
     endif
 
     call add(s:toChange, {'action' : 'add', 'key' : key, 'word' : word})
@@ -75,7 +75,7 @@ function! VimIMSyncRemove(word, ...)
 
     let word = substitute(a:word, ' ', '', 'g')
     if len(word) <= 0
-        echo 'VimIMSyncRemove: empty word'
+        echo '[VimIMSync] VimIMSyncRemove: empty word'
     endif
 
     call add(s:toChange, {'action' : 'remove', 'key' : key, 'word' : word})
@@ -92,7 +92,7 @@ function! VimIMSyncReset(word)
 
     let word = substitute(a:word, ' ', '', 'g')
     if len(word) <= 0
-        echo 'VimIMSyncReset: empty word'
+        echo '[VimIMSync] VimIMSyncReset: empty word'
     endif
 
     call add(s:toChange, {'action' : 'reset', 'word' : word})
@@ -106,19 +106,19 @@ function! VimIMSyncClearLocalState()
     let s:toChange = []
     let s:toChange_saved = []
     call s:reloadFromRemote()
-    echo 'VimIMSync: local changes cleared'
+    echo '[VimIMSync] local changes cleared'
     return 1
 endfunction
 command! -nargs=0 IMClearLocalState :call VimIMSyncClearLocalState(<f-args>)
 
 function! VimIMSyncUpload(...)
     if a:0 > 1
-        echo 'usage:'
-        echo '  call VimIMSyncUpload([password])'
+        echo '[VimIMSync] usage:'
+        echo '[VimIMSync]   call VimIMSyncUpload([password])'
         return
     endif
     if len(s:toChange) <= 0
-        echo 'VimIMSync: nothing to upload'
+        echo '[VimIMSync] nothing to upload'
         return
     endif
 
@@ -137,7 +137,7 @@ function! VimIMSyncUpload(...)
         endif
     endif
     if len(s:savedPwd) <= 0
-        echo 'VimIMSync canceled'
+        echo '[VimIMSync] upload canceled'
         return
     endif
 
@@ -163,7 +163,7 @@ command! -nargs=0 IMDownload :call VimIMSyncDownload(<f-args>)
 function! VimIMSyncState(...)
     if len(s:toChange) <= 0
         redraw!
-        echo 'VimIMSync: nothing to upload'
+        echo '[VimIMSync] nothing to upload'
         return
     endif
     if a:0 > 0
@@ -173,7 +173,7 @@ function! VimIMSyncState(...)
     endif
 
     redraw!
-    echo 'VimIMSync: you have ' . len(s:toChange) . ' changes to upload:'
+    echo '[VimIMSync] you have ' . len(s:toChange) . ' changes to upload:'
     let iItem = 0
     for item in s:toChange
         if item['action'] == 'add'
@@ -275,15 +275,22 @@ endfunction
 
 function! s:upload()
     redraw!
-    echo 'updating...'
+    echo '[VimIMSync] updating...'
     let tmp_path = $HOME . '/_VimIMSync_tmp_'
     call s:rm(tmp_path)
     call system('git clone --depth=1 ' . g:VimIMSync_repo_head . g:VimIMSync_repo_tail . ' "' . tmp_path . '"')
     let dstFile = tmp_path . '/' . g:VimIMSync_file
     if !filewritable(dstFile)
         redraw!
-        echo 'unable to write file: "' . dstFile . '"'
+        echo '[VimIMSync] update failed, retry? (y/n)'
         call s:rm(tmp_path)
+        let cmd=getchar()
+        if cmd != char2nr("n")
+            call s:upload()
+        else
+            redraw!
+            echo '[VimIMSync] upload canceled'
+        endif
         return
     endif
 
@@ -298,7 +305,7 @@ function! s:upload()
     call system('git -C "' . tmp_path . '" config push.default "simple"')
     call system('git -C "' . tmp_path . '" commit -a -m "update by VimIMSync"')
     redraw!
-    echo 'pushing...'
+    echo '[VimIMSync] pushing...'
     let result = system('git -C "' . tmp_path . '" push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
     redraw!
     " strip password
