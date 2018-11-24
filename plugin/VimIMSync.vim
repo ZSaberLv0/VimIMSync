@@ -298,13 +298,13 @@ function! s:upload()
     update
     bd
 
-    call system('git -C "' . tmp_path . '" config user.email "' . g:zf_git_user_email . '"')
-    call system('git -C "' . tmp_path . '" config user.name "' . g:zf_git_user_name . '"')
-    call system('git -C "' . tmp_path . '" config push.default "simple"')
-    call system('git -C "' . tmp_path . '" commit -a -m "update by VimIMSync"')
+    call system('cd "' . tmp_path . '" && git config user.email "' . g:zf_git_user_email . '"')
+    call system('cd "' . tmp_path . '" && git config user.name "' . g:zf_git_user_name . '"')
+    call system('cd "' . tmp_path . '" && git config push.default "simple"')
+    call system('cd "' . tmp_path . '" && git commit -a -m "update by VimIMSync"')
     redraw!
     echo '[VimIMSync] pushing...'
-    let result = system('git -C "' . tmp_path . '" push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
+    let result = system('cd "' . tmp_path . '" && git push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
     redraw!
     " strip password
     let result = substitute(result, ':[^:]*@', '@', 'g')
@@ -398,8 +398,8 @@ function! s:reloadFromRemote()
     let t = substitute(g:VimIMSync_file, '\\', '/', 'g')
     let dstPath = substitute(dstPath, '\\', '/', 'g')
     let dstPath = substitute(dstPath, t, '', 'g')
-    call system('git -C "' . dstPath . '" checkout .')
-    call system('git -C "' . dstPath . '" pull')
+    call system('cd "' . dstPath . '" && git checkout .')
+    call system('cd "' . dstPath . '" && git pull')
     call s:reloadVimim()
 endfunction
 function! s:reloadVimim()
