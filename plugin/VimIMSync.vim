@@ -130,10 +130,8 @@ function! VimIMSyncUpload(...)
             let s:savedPwd = g:zf_git_user_token
         else
             call inputsave()
-            let s:savedPwd = input('Enter password: ')
+            let s:savedPwd = inputsecret('Enter password: ')
             call inputrestore()
-            " prevent password from being saved to viminfo
-            set viminfo=
         endif
     endif
     if len(s:savedPwd) <= 0
