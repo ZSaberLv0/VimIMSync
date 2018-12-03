@@ -304,7 +304,7 @@ function! s:upload()
     call system('cd "' . tmp_path . '" && git commit -a -m "update by VimIMSync"')
     redraw!
     echo '[VimIMSync] pushing...'
-    let result = system('cd "' . tmp_path . '" && git push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail)
+    let result = system('cd "' . tmp_path . '" && git push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail . ' HEAD')
     redraw!
     " strip password
     let result = substitute(result, ':[^:]*@', '@', 'g')
