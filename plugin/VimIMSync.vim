@@ -2,8 +2,10 @@ let g:VimIMSync_loaded=1
 
 " let g:VimIMSync_repo_head='https://'
 " let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'
-" let g:VimIMSync_user='YourUserName'
 " let g:VimIMSync_file='vimim_data_file_path'
+" let g:VimIMSync_git_user_name='YourUserName'
+" let g:VimIMSync_git_user_email='YourEmail'
+" let g:VimIMSync_git_user_token='your password or access token'
 if !exists('g:VimIMSync_actionFinishCallback')
     let g:VimIMSync_actionFinishCallback=''
 endif
@@ -20,6 +22,16 @@ let s:savedPwd=''
 " }
 let s:toChange=[]
 let s:toChange_saved=[]
+
+function! s:git_user_email()
+    return get(g:, 'VimIMSync_git_user_email', get(g:, 'zf_git_user_email', ''))
+endfunction
+function! s:git_user_name()
+    return get(g:, 'VimIMSync_git_user_name', get(g:, 'zf_git_user_name', ''))
+endfunction
+function! s:git_user_token()
+    return get(g:, 'VimIMSync_git_user_token', get(g:, 'zf_git_user_token', ''))
+endfunction
 
 function! VimIMSync(word, key, ...)
     if a:0 > 1
@@ -126,9 +138,8 @@ function! VimIMSyncUpload(...)
         let s:savedPwd=a:1
     endif
     if len(s:savedPwd) <= 0
-        if exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)
-            let s:savedPwd = g:zf_git_user_token
-        else
+        let s:savedPwd = s:git_user_token()
+        if empty(s:savedPwd)
             call inputsave()
             let s:savedPwd = inputsecret('Enter password: ')
             call inputrestore()
@@ -260,12 +271,16 @@ function! s:stateCheck()
         echo 'g:VimIMSync_repo_tail not set'
         return 0
     endif
-    if !exists('g:VimIMSync_user')
-        echo 'g:VimIMSync_user not set'
-        return 0
-    endif
     if !exists('g:VimIMSync_file')
         echo 'g:VimIMSync_file not set'
+        return 0
+    endif
+    if empty(s:git_user_email())
+        echo 'g:VimIMSync_git_user_email not set'
+        return 0
+    endif
+    if empty(s:git_user_name())
+        echo 'g:VimIMSync_git_user_name not set'
         return 0
     endif
     return 1
@@ -298,13 +313,13 @@ function! s:upload()
     update
     bd
 
-    call system('cd "' . tmp_path . '" && git config user.email "' . g:zf_git_user_email . '"')
-    call system('cd "' . tmp_path . '" && git config user.name "' . g:zf_git_user_name . '"')
+    call system('cd "' . tmp_path . '" && git config user.email "' . s:git_user_email() . '"')
+    call system('cd "' . tmp_path . '" && git config user.name "' . s:git_user_name() . '"')
     call system('cd "' . tmp_path . '" && git config push.default "simple"')
     call system('cd "' . tmp_path . '" && git commit -a -m "update by VimIMSync"')
     redraw!
     echo '[VimIMSync] pushing...'
-    let result = system('cd "' . tmp_path . '" && git push ' . g:VimIMSync_repo_head . g:VimIMSync_user . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail . ' HEAD')
+    let result = system('cd "' . tmp_path . '" && git push ' . g:VimIMSync_repo_head . s:git_user_name() . ':' . s:savedPwd . '@' . g:VimIMSync_repo_tail . ' HEAD')
     redraw!
     " strip password
     let result = substitute(result, ':[^:]*@', '@', 'g')
@@ -421,7 +436,7 @@ endfunction
 augroup VimIMSyncAutoUpload
     autocmd!
     autocmd VimLeavePre *
-                \ if g:VimIMSync_uploadWithoutConfirm && exists('g:zf_git_user_token') && !empty(g:zf_git_user_token)|
+                \ if g:VimIMSync_uploadWithoutConfirm && !empty(s:git_user_token())|
                 \     call VimIMSyncUpload()|
                 \ else|
                 \     call VimIMSyncState(5)|
