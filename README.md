@@ -14,8 +14,9 @@ sync vimim's db file with git repo
     ```
     let g:VimIMSync_repo_head='https://'
     let g:VimIMSync_repo_tail='github.com/YourUserName/yourRepo'
-    let g:VimIMSync_user='YourUserName'
     let g:VimIMSync_file='vimim_data_file_path, such as: plugin/vimim.baidu.txt'
+    let g:VimIMSync_git_user_name='YourUserName'
+    let g:VimIMSync_git_user_email='YourEmail'
     ```
 
     * the db file must follow these rules
@@ -27,10 +28,10 @@ sync vimim's db file with git repo
             xian 先 西安
             ```
 
-    * optionally, you may set `g:zf_git_user_token` to push without input your git password
+    * optionally, you may set `g:VimIMSync_git_user_token` to push without input your git password
 
         ```
-        let g:zf_git_user_token='your github access token'
+        let g:VimIMSync_git_user_token='your github access token'
         ```
 
 * `call IMSync word pinyin [password]`
