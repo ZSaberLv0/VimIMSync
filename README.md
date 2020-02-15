@@ -1,3 +1,7 @@
+**DEPRECATED: please use [ZSaberLv0/ZFVimIM](https://github.com/ZSaberLv0/ZFVimIM)**
+
+---
+
 sync vimim's db file with git repo
 
 # usage
